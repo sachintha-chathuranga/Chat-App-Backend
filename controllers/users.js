@@ -266,7 +266,7 @@ exports.getLastMsg = async (req, res) =>{
             },
             order: [['id', 'DESC']]
         });
-        if(msgs.message.length > 30){
+        if(msgs && msgs.message.length > 30){
             msgs.message = msgs.message.substring(0, 30).concat(" ....");
         }
         !msgs ? res.status(201).json({message: 'No any messages yet!'}) : res.status(200).json(msgs);
