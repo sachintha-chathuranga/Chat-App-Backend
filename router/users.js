@@ -12,7 +12,6 @@ router.route('/search/:id').post(searhFriends);
 router.route('/message').post(createMsg).get(getMsgs);
 router.route('/msg').get(getLastMsg);
 router.route('/:id').put(updateUser).delete(deleteUser);
-
 router.route('/:id').get(getUser);
 
 module.exports = router;

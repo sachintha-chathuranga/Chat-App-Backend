@@ -34,8 +34,7 @@ const User = db.define('user', {
         allowNull: false
     },
     profil_pic: {
-        type: DataTypes.STRING,
-        defaultValue: "default.png"
+        type: DataTypes.STRING
     },
     status: {
         type: DataTypes.BOOLEAN,
@@ -88,7 +87,7 @@ Message.belongsTo(User,{
 });
 
 //keep sync with database table, if there not any table automatically creat
-db.sync().then(() => {
+db.sync({force:ture}).then(() => {
     console.log("user table created");
 }).catch((err) => {
     console.log("Error syncing the Useer table" + err);
