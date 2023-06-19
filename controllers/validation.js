@@ -21,7 +21,7 @@ exports.anyValidation = (body) =>{
         throw new Error('Password length should be between 8 and 12 character.');
     }else if(body.fname && (body.fname.length < 3 || body.fname.length > 15)){
         throw new Error('First name must be greater than 3 character and less than 15 character!');
-    }else if(body.fname && (body.lname.length < 3 || body.lname.length > 15)){
+    }else if(body.lname && (body.lname.length < 3 || body.lname.length > 15)){
         throw new Error('Last name must be greater than 3 character and less than 15 character!');
     }
 }
