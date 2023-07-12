@@ -76,7 +76,6 @@ exports.logoutUser = async (req, res) => {
     try {
         if(!cookies.jwt) return res.status(401).json('JWT not in cookies');
         const refreshToken = cookies.jwt;
-
         const user = await User.findOne({
             attributes: {
                 exclude: ['refresh_token', 'password']
@@ -85,7 +84,7 @@ exports.logoutUser = async (req, res) => {
         });
         if(!user) {
             res.clearCookie('jwt', {httpOnly: true, samesite: 'None', secure: true, maxAge: 24 * 60 * 60 * 1000});
-            return res.status(204).json('user not found');
+            return res.status(404).json('user not found');
         }
         const data = await user.update({status: false, refresh_token: null});
         res.clearCookie('jwt', {httpOnly: true, samesite: 'None', secure: true, maxAge: 24 * 60 * 60 * 1000});
