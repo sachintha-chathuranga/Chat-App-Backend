@@ -20,7 +20,6 @@ exports.createMsg = async (req, res) => {
             case 'SequelizeForeignKeyConstraintError':
                 return res.status(402).json("user does not exist for message");
         }
-
         res.status(500).json(error.message);
     }
 }
@@ -31,12 +30,12 @@ exports.deleteMsgs = async (req, res) => {
                 where: {
                     [Op.or]: [{
                         [Op.and]: [{
-                            sender_id: req.params.id,
+                            sender_id: req.user.user_id,
                             receiver_id: req.query.friend_id
                         }]},{
                         [Op.and]: [{
                             sender_id: req.query.friend_id,
-                            receiver_id: req.params.id
+                            receiver_id: req.user.user_id
                         }]
                     }]
                 }
@@ -53,12 +52,12 @@ exports.getMsgs = async (req, res) =>{
             where: {
                 [Op.or]: [{
                     [Op.and]: [{
-                        sender_id: req.query.user_id,
+                        sender_id: req.user.user_id,
                         receiver_id: req.query.friend_id
                     }]},{
                     [Op.and]: [{
                         sender_id: req.query.friend_id,
-                        receiver_id: req.query.user_id
+                        receiver_id: req.user.user_id
                     }]
                 }]
             },
@@ -75,12 +74,12 @@ exports.getLastMsg = async (req, res) =>{
             where: {
                 [Op.or]: [{
                     [Op.and]: [{
-                        sender_id: req.query.user_id,
+                        sender_id: req.user.user_id,
                         receiver_id: req.query.friend_id
                     }]},{
                     [Op.and]: [{
                         sender_id: req.query.friend_id,
-                        receiver_id: req.query.user_id
+                        receiver_id: req.user.user_id
                     }]
                 }]
             },

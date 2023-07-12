@@ -57,12 +57,11 @@ exports.loginUser = async (req, res) => {
             if(validPassword){
                 const obj = JSON.parse(JSON.stringify(user));
                 delete obj.password;
-                // const accessToken = jwt.sign(obj,process.env.ACCESS_TOKEN_SECRET,{expiresIn: '60s'});
-                // const refreshToken = jwt.sign(obj,process.env.REFRESH_TOKEN_SECRET,{expiresIn: '1d'});
-                const data = await user.update({status: true/* , refresh_token: refreshToken */});
-                // res.cookie('jwt', refreshToken, {httpOnly: true, maxAge: 24 * 60 * 60 * 1000});
-                res.status(200).json(data);
-                // res.status(200).json(accessToken);
+                const accessToken = jwt.sign(obj,process.env.ACCESS_TOKEN_SECRET,{expiresIn: '15min'});
+                const refreshToken = jwt.sign(obj,process.env.REFRESH_TOKEN_SECRET,{expiresIn: '1d'});
+                const data = await user.update({status: true, refresh_token: refreshToken});
+                res.cookie('jwt', refreshToken, {httpOnly: true, samesite: 'None', secure: true, maxAge: 24 * 60 * 60 * 1000});
+                res.status(200).json({...obj, status: true, access_token: accessToken});
             }else{res.status(400).json("wrong password")}
         }else{
             res.status(401).json("There is no any Account for this Email.");
@@ -71,6 +70,30 @@ exports.loginUser = async (req, res) => {
         res.status(402).json(error.message);
     }
 };
+
+exports.logoutUser = async (req, res) => {
+    const cookies = req.cookies;
+    try {
+        if(!cookies.jwt) return res.status(401).json('JWT not in cookies');
+        const refreshToken = cookies.jwt;
+
+        const user = await User.findOne({
+            attributes: {
+                exclude: ['refresh_token', 'password']
+            },
+            where: {refresh_token: refreshToken}
+        });
+        if(!user) {
+            res.clearCookie('jwt', {httpOnly: true, samesite: 'None', secure: true, maxAge: 24 * 60 * 60 * 1000});
+            return res.status(204).json('user not found');
+        }
+        const data = await user.update({status: false, refresh_token: null});
+        res.clearCookie('jwt', {httpOnly: true, samesite: 'None', secure: true, maxAge: 24 * 60 * 60 * 1000});
+        res.status(200).json('logout success!');
+    } catch (error) {
+        res.status(402).json(error.message);
+    }
+}
 
 // --update PUT
 
@@ -82,14 +105,12 @@ exports.updateUser = async (req, res) => {
             }
             const user = await User.findOne({ 
                 attributes: {
-                    exclude: ['password']
+                    exclude: ['refresh_token', 'password']
                 },
-                where: { user_id: req.params.id }
+                where: { user_id: req.user.user_id }
              });
             const state = await user.update({ ...snakeKeys(req.body) });
-            const data = JSON.parse(JSON.stringify(user));
-            delete data.password;
-            !state ? res.status(400).json("user not update") : res.status(200).json(data);
+            !state ? res.status(400).json("user not update") : res.status(200).json({...user.dataValues, access_token: req.headers['authorization'].split(' ')[1] });
         } catch (error) {
             let errors = [];
 
@@ -120,13 +141,12 @@ exports.updateUser = async (req, res) => {
 
 // get a user by id or params
 exports.getUser = async (req, res) => {
-    const userId = req.params.id;
     try {
         const user = await User.findOne({
             attributes: {
                 exclude: ['password', 'email', 'refresh_token']
             },
-            where: { user_id: userId }
+            where: { user_id: req.params.id }
          });
         !user ? res.status(404).json('User Not Found') : res.status(200).json(user);
     } catch (error) {
@@ -145,7 +165,7 @@ exports.getFriends = async (req, res) => {
             },
             where: {
                 [Op.not]: [{
-                    user_id: req.query.user_id
+                    user_id: req.user.user_id
                 }]
             },
             limit: 15
@@ -168,7 +188,7 @@ exports.searhFriends = async (req, res) =>{
             where: {
                 [Op.and]: [{
                     [Op.not]: [{
-                        user_id: req.params.id
+                        user_id: req.user.user_id
                     }]}
                     ,{
                     [Op.or]: [{
@@ -190,7 +210,6 @@ exports.searhFriends = async (req, res) =>{
 
 // --delete DELETE
 exports.deleteUser = async (req, res) => {
-    if(req.body.user_id == req.params.id){
         try {
              const user = await User.findOne({
                 where: {user_id: req.body.user_id}
@@ -199,7 +218,7 @@ exports.deleteUser = async (req, res) => {
                 const validPassword = await bcrypt.compare(req.body.password, user.password);
                 if(validPassword){
                     const state = await user.destroy();
-                    res.status(200).json('success');
+                    state ? res.status(200).json('success') : res.status(403).json('Database errorr, try again later');
                 }else{
                     res.status(401).json("wrong password");
                 }
@@ -209,9 +228,6 @@ exports.deleteUser = async (req, res) => {
         } catch (error) {
             res.status(500).json(errorr.message);
         }
-    }else{
-        return res.status(403).json("You can delete only your account ");
-    }
 };
 
 

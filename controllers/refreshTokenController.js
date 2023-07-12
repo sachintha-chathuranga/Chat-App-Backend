@@ -13,14 +13,18 @@ exports.updateAccessToken = async (req, res) => {
             },
             where: {refresh_token: refreshToken}
         });
-        if(!user) return res.status(403).json('user not found');
+        if(!user) return res.status(402).json('user not found');
         jwt.verify(
             refreshToken,
             process.env.REFRESH_TOKEN_SECRET,
             (err, decoded) =>{
-                if(err || user.dataValues.user_id!==decoded.user_id) return res.status(403).json('unautherize');
-                const accessToken = jwt.sign(user.dataValues, process.env.ACCESS_TOKEN_SECRET,{expiresIn: '60s'});
-                res.status(200).json(accessToken);
+                if(err || user.dataValues.user_id!==decoded.user_id){ 
+                    user.update({status: false, refresh_token: null});
+                    res.clearCookie('jwt', {httpOnly: true, samesite: 'None', secure: true, maxAge: 24 * 60 * 60 * 1000});
+                    return res.status(403).json('unautherize');
+                };
+                const accessToken = jwt.sign(user.dataValues, process.env.ACCESS_TOKEN_SECRET,{expiresIn: '15min'});
+                res.status(200).json({...user.dataValues, access_token: accessToken});
             }
         )
     } catch (error) {
