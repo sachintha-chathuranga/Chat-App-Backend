@@ -19,7 +19,7 @@ const awsRout = require('./router/aws');
 const tokenRout = require('./router/token');
 const verifyJWT = require('./middleware/verifyJwT');
 const app = express();
-const whitelist = ['https://mmsc-chat-app.netlify.app', 'http://localhost:3000']
+const whitelist = ['https://mmsc-chatapp.netlify.app', 'http://localhost:4000']
 
 const corsOptions = {
     origin: (origin, callback) =>{
