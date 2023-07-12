@@ -82,13 +82,12 @@ exports.logoutUser = async (req, res) => {
             },
             where: {refresh_token: refreshToken}
         });
-        if(!user) {
+        if(user) {
+            const data = await user.update({status: false, refresh_token: null});
             res.clearCookie('jwt', {httpOnly: true, samesite: 'None', secure: true, maxAge: 24 * 60 * 60 * 1000});
-            return res.status(404).json('user not found');
+            res.status(200).json('logout success!');
         }
-        const data = await user.update({status: false, refresh_token: null});
-        res.clearCookie('jwt', {httpOnly: true, samesite: 'None', secure: true, maxAge: 24 * 60 * 60 * 1000});
-        res.status(200).json('logout success!');
+        res.status(404).json('user not found');
     } catch (error) {
         res.status(402).json(error.message);
     }
