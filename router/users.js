@@ -11,7 +11,7 @@ router.route('/signUp').post(validation, createUser);
 router.route('/login').post(loginUser);
 router.route('/friends').get(verifyJWT, getFriends);
 router.route('/search').post(verifyJWT, searhFriends);
-router.route('/logout').put(verifyJWT, logoutUser);
+router.route('/logout').put(logoutUser);
 router.route('/').put(verifyJWT, updateValidation, updateUser).delete(verifyJWT, deleteUser);
 router.route('/:id').get(verifyJWT, getUser);
 
