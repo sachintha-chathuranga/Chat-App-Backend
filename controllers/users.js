@@ -57,7 +57,7 @@ exports.loginUser = async (req, res) => {
             if(validPassword){
                 const obj = JSON.parse(JSON.stringify(user));
                 delete obj.password;
-                const accessToken = jwt.sign(obj,process.env.ACCESS_TOKEN_SECRET,{expiresIn: '15min'});
+                const accessToken = jwt.sign(obj,process.env.ACCESS_TOKEN_SECRET,{expiresIn: '1min'});
                 const refreshToken = jwt.sign(obj,process.env.REFRESH_TOKEN_SECRET,{expiresIn: '1d'});
                 const data = await user.update({status: true, refresh_token: refreshToken});
                 res.cookie('jwt', refreshToken, {httpOnly: true, samesite: 'None', secure: true, maxAge: 24 * 60 * 60 * 1000});
