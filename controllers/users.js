@@ -64,17 +64,17 @@ exports.loginUser = async (req, res) => {
                 res.status(200).json({...obj, status: true, access_token: accessToken});
             }else{res.status(400).json("wrong password")}
         }else{
-            res.status(401).json("There is no any Account for this Email.");
+            res.status(402).json("There is no any Account for this Email.");
         } 
     } catch (error) {
-        res.status(402).json(error.message);
+        res.status(403).json(error.message);
     }
 };
 
 exports.logoutUser = async (req, res) => {
     const cookies = req.cookies;
     try {
-        if(!cookies.jwt) return res.status(401).json('JWT not in cookies');
+        if(!cookies.jwt) return res.status(401).json('JWT not in cookies for logout request');
         const refreshToken = cookies.jwt;
         const user = await User.findOne({
             attributes: {
