@@ -60,7 +60,7 @@ exports.loginUser = async (req, res) => {
                 const accessToken = jwt.sign(obj,process.env.ACCESS_TOKEN_SECRET,{expiresIn: '1min'});
                 const refreshToken = jwt.sign(obj,process.env.REFRESH_TOKEN_SECRET,{expiresIn: '1d'});
                 const data = await user.update({status: true, refresh_token: refreshToken});
-                res.cookie('jwt', refreshToken, {httpOnly: true, samesite: 'None', secure: true, maxAge: 24 * 60 * 60 * 1000});
+                res.cookie('jwt', refreshToken, {httpOnly: true, sameSite: 'none', secure: true, maxAge: 24 * 60 * 60 * 1000});
                 res.status(200).json({...obj, status: true, access_token: accessToken});
             }else{res.status(400).json("wrong password")}
         }else{
