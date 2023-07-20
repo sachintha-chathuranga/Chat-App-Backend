@@ -23,7 +23,7 @@ exports.updateAccessToken = async (req, res) => {
                     res.clearCookie('jwt', {httpOnly: true, samesite: 'None', secure: true, maxAge: 24 * 60 * 60 * 1000});
                     return res.status(403).json('unautherize');
                 };
-                const accessToken = jwt.sign(user.dataValues, process.env.ACCESS_TOKEN_SECRET,{expiresIn: '1min'});
+                const accessToken = jwt.sign(user.dataValues, process.env.ACCESS_TOKEN_SECRET,{expiresIn: '15min'});
                 res.status(200).json({...user.dataValues, access_token: accessToken});
             }
         )

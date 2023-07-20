@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js"
+    "start": "node app.js",
+    "dev": "nodemon app.js"
   },
   "keywords": [],
   "author": "Sachintha",
@@ -19,11 +20,13 @@
     "dotenv": "^10.0.0",
     "ejs": "^2.7.4",
     "express": "^4.17.1",
+    "http": "0.0.1-security",
     "jsonwebtoken": "^9.0.0",
     "mysql2": "^2.3.0",
     "path": "^0.12.7",
     "sequelize": "^6.6.5",
-    "snakecase-keys": "^4.0.2"
+    "snakecase-keys": "^4.0.2",
+    "socket.io": "^4.7.1"
   },
   "devDependencies": {},
   "description": "open source web chat app for users"

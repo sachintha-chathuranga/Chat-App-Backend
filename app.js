@@ -1,5 +1,7 @@
 const dotenv = require('dotenv');
 const express = require('express');
+const { createServer } = require('http');
+const { Server } = require('socket.io');
 
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
@@ -18,7 +20,10 @@ const messagesRout = require('./router/messages');
 const awsRout = require('./router/aws');
 const tokenRout = require('./router/token');
 const verifyJWT = require('./middleware/verifyJwT');
+
 const app = express();
+
+
 const whitelist = ['https://mmsc-chatapp.netlify.app', 'http://localhost:3000']
 
 const corsOptions = {
@@ -49,7 +54,34 @@ app.use('/api/messages', messagesRout);
 app.use('/api/aws', awsRout);
 
 
+const httpServer = createServer(app);
+const io = new Server(httpServer, {
+    cors: {
+        origin: ['https://mmsc-chatapp.netlify.app', 'http://localhost:3000'],
+        methods: ["GET", "POST"]
+    }
+});
+
+io.on("connection", (socket) =>{
+    console.log(socket.id + " is Connected");
+
+    socket.on("joinRoom", (data) => {
+        socket.join(data);
+    });
+
+    socket.on("sendMessage", ({sender_id, receiver_id, message}) => {
+        socket.to(sender_id+receiver_id).emit("getMessage", {
+            sender_id,
+            receiver_id,
+            message
+        });
+    });
+
+    socket.on("leaveRoom", (data) => {
+        socket.leave(data);
+    });
+});
 
 const PORT = process.env.PORT || 5001;
 
-app.listen(PORT, console.log(`Server running on PORT: ${PORT}`));
+httpServer.listen(PORT, console.log(`Server running on PORT: ${PORT}`));
