@@ -1,5 +1,5 @@
 const snakeKeys = require('snakecase-keys');
-const {User} = require('../models/User');
+const {User, Message} = require('../models/User');
 const bcrypt = require('bcrypt');
 const { Op } = require('sequelize');
 const jwt = require('jsonwebtoken');
@@ -73,8 +73,8 @@ exports.loginUser = async (req, res) => {
 
 exports.logoutUser = async (req, res) => {
     const cookies = req.cookies;
+    if(!cookies.jwt) return res.status(401).json('JWT not in cookies for logout request');
     try {
-        if(!cookies.jwt) return res.status(401).json('JWT not in cookies for logout request');
         const refreshToken = cookies.jwt;
         const user = await User.findOne({
             attributes: {
@@ -154,7 +154,7 @@ exports.getUser = async (req, res) => {
 
 //  get all user friends
 exports.getFriends = async (req, res) => {
-    const offset = 15 * (parseInt(req.query.index) - 1);
+    const offset = req.query.index ? (15 * (parseInt(req.query.index) - 1)) : null;
     try {
         const friends = await User.findAll({
             offset,
@@ -162,6 +162,7 @@ exports.getFriends = async (req, res) => {
                 exclude: ['password', 'email', 'refresh_token']
             },
             where: {
+                status: true,
                 [Op.not]: [{
                     user_id: req.user.user_id
                 }]

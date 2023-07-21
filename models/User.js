@@ -71,6 +71,10 @@ const Message = db.define('message', {
     message: {
         type: DataTypes.TEXT,
         allowNull: false
+    },
+    is_read: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
     }
 }, {
     timestamps: false,
@@ -85,12 +89,12 @@ User.hasMany(Message,{
 
 Message.belongsTo(User,{
     foreignKey: {
-        name: 'receiver_id'
+        name: 'sender_id'
     }
 });
 
 //keep sync with database table, if there not any table automatically creat
-db.sync({force: false}).then(() => {
+db.sync({alter: false}).then(() => {
     console.log("user table created");
 }).catch((err) => {
     console.log("Error syncing the Useer table" + err);

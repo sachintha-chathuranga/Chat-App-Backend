@@ -1,17 +1,11 @@
 const snakeKeys = require('snakecase-keys');
 const {User, Message} = require('../models/User');
-const bcrypt = require('bcrypt');
 const { Op } = require('sequelize');
-const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
 exports.createMsg = async (req, res) => {
     try {
-        const newMsg = await Message.create( {
-            sender_id : req.body.sender_id,
-            receiver_id : req.body.receiver_id,
-            message : req.body.message
-        });
+        const newMsg = await Message.create({ ...snakeKeys(req.body) });
         !newMsg ? res.status(400).json('msg not store!') : res.status(200).json(newMsg);
     } catch (error) {
         switch (error.name) {
@@ -20,6 +14,22 @@ exports.createMsg = async (req, res) => {
             case 'SequelizeForeignKeyConstraintError':
                 return res.status(402).json("user does not exist for message");
         }
+        res.status(500).json(error.message);
+    }
+}
+exports.updateMsg = async (req, res) => {
+    try {
+        const msgs = await Message.update({is_read: true},{
+            where: {
+                is_read: false,
+                [Op.and]: [{
+                    sender_id: req.query.friend_id,
+                    receiver_id: req.user.user_id
+                }]
+            }
+        });
+        !msgs ? res.status(400).json('messages no updated') : res.status(200).json(msgs);
+    } catch (error) {
         res.status(500).json(error.message);
     }
 }
@@ -45,7 +55,6 @@ exports.deleteMsgs = async (req, res) => {
             res.status(500).json(error.message);
         }
 };
-
 exports.getMsgs = async (req, res) =>{
     try {
         const msgs = await Message.findAll({
@@ -64,6 +73,25 @@ exports.getMsgs = async (req, res) =>{
             order: [['id', 'ASC']]
         });
         !msgs ? res.status(400).json('messages not available') : res.status(200).json(msgs);
+    } catch (error) {
+        res.status(500).json(error.message);
+    }
+}
+exports.getAllUnreadMsgs = async (req, res) =>{
+    try {
+        const msgs = await Message.findAll({
+            attributes: {
+                exclude: ['is_read']
+            },
+            where: {
+                [Op.and]: [{
+                    is_read: false,
+                    receiver_id: req.user.user_id
+                }]
+            },
+            order: [['id', 'ASC']]
+        });
+        res.status(200).json(msgs);
     } catch (error) {
         res.status(500).json(error.message);
     }
