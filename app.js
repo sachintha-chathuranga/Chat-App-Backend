@@ -57,13 +57,18 @@ app.use('/api/aws', awsRout);
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
     cors: {
-        origin: ['https://mmsc-chatapp.netlify.app', 'http://localhost:3000'],
+        origin: (origin, callback) =>{
+            if(whitelist.indexOf(origin) !== -1 || !origin){
+                callback(null, true)
+            }else{
+                callback(new Error('Not allowed by CORS'))
+            }
+        },
         methods: ["GET", "POST"]
     }
 });
 
 io.on("connection", (socket) =>{
-    console.log(socket.id + " is Connected");
 
     socket.on("joinRoom", (data) => {
         socket.join(data);
