@@ -82,7 +82,7 @@ User.hasMany(Message,{
 
 Message.belongsTo(User,{
     foreignKey: {
-        name: 'sender_id'
+        name: 'receiver_id'
     }
 });
 

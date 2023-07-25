@@ -131,16 +131,19 @@ exports.getUser = async (req, res) => {
 
 //  get all user friends
 exports.getFriends = async (req, res) => {
+    const offset = 15 * (parseInt(req.query.index) - 1);
     try {
         const friends = await User.findAll({
+            offset,
             attributes: {
                 exclude: ['password', 'email']
             },
             where: {
                 [Op.not]: [{
-                    user_id: req.params.id
+                    user_id: req.query.user_id
                 }]
-            }
+            },
+            limit: 15
         });
         res.status(200).json(friends);
     } catch (error) {
@@ -149,8 +152,11 @@ exports.getFriends = async (req, res) => {
 }
 
 exports.searhFriends = async (req, res) =>{
+    const offset = req.query.index ? (15 * (parseInt(req.query.index) - 1)) : null;
     try {
         const friends = await User.findAll({
+            offset,
+            limit: 15,
             attributes: {
                 exclude: ['password', 'email']
             },
@@ -226,6 +232,28 @@ exports.createMsg = async (req, res) => {
         res.status(500).json({ error });
     }
 }
+
+exports.deleteMsgs = async (req, res) => {
+        try {
+            const count = await Message.destroy({
+                where: {
+                    [Op.or]: [{
+                        [Op.and]: [{
+                            sender_id: req.params.id,
+                            receiver_id: req.query.friend_id
+                        }]},{
+                        [Op.and]: [{
+                            sender_id: req.query.friend_id,
+                            receiver_id: req.params.id
+                        }]
+                    }]
+                }
+            });
+            res.status(200).json(count);
+        } catch (error) {
+            res.status(500).json({ error });
+        }
+};
 
 exports.getMsgs = async (req, res) =>{
     try {
