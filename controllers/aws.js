@@ -13,7 +13,7 @@ exports.genarateURL = (req, res) =>{
         Bucket: S3_BUCKET,
         Key: fileName,
         //# of second of validation signurl time
-        Expires: 60,
+        Expires: 2000,
         ContentType: fileType,
         ACL: 'public-read'
     };
@@ -30,4 +30,19 @@ exports.genarateURL = (req, res) =>{
         res.write(JSON.stringify(returnData));
         res.end();
     });
+} 
+exports.deletObj = async (req, res) =>{
+    const s3 = new aws.S3();
+    const fileName = req.query['file_name'];
+    const s3Params = {
+        Bucket: S3_BUCKET,
+        Key: fileName
+    };
+
+    try {
+        await s3.deleteObject(s3Params).promise();
+        res.status(200).json("File delete  successfuly");
+    } catch (error) {
+        res.status(500).json("File doesn't delete");
+    }
 } 
