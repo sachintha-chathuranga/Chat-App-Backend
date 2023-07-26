@@ -96,7 +96,7 @@ Message.belongsTo(User,{
 });
 
 //keep sync with database table, if there not any table automatically creat
-db.sync({force: true}).then(() => {
+db.sync({force: false}).then(() => {
     console.log("user table created");
 }).catch((err) => {
     console.log("Error syncing the Useer table" + err);
