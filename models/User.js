@@ -69,7 +69,9 @@ const Message = db.define('message', {
         onDelete: 'CASCADE'
     },
     message: {
-        type: DataTypes.TEXT,
+        type: DataTypes.STRING(255),
+        charset: 'utf8mb4',
+        collate: 'utf8mb4_unicode_ci',
         allowNull: false
     },
     is_read: {
@@ -94,7 +96,7 @@ Message.belongsTo(User,{
 });
 
 //keep sync with database table, if there not any table automatically creat
-db.sync().then(() => {
+db.sync({alter: true}).then(() => {
     console.log("user table created");
 }).catch((err) => {
     console.log("Error syncing the Useer table" + err);
