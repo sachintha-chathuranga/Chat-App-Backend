@@ -1,13 +1,13 @@
 const snakeKeys = require('snakecase-keys');
-const {User, Message} = require('../models/User');
+const {User} = require('../models/User');
 const bcrypt = require('bcrypt');
 const { Op } = require('sequelize');
-const { validation, anyValidation } = require('./validation');
+const jwt = require('jsonwebtoken');
+require('dotenv').config();
 
 // --create User
 exports.createUser = async (req, res) => {
         try {
-            await validation(req.body.fname, req.body.lname, req.body.email, req.body.password);
             const salt = await bcrypt.genSalt(10);
             const hashPass = await bcrypt.hash(req.body.password, salt);
             const newUser = await User.create( {
@@ -47,16 +47,21 @@ exports.createUser = async (req, res) => {
 exports.loginUser = async (req, res) => {
     try {
         const user = await User.findOne({
+            attributes: {
+                exclude: ['refresh_token']
+            },
             where: {email: req.body.email}
         });
         if(user){
             const validPassword = await bcrypt.compare(req.body.password, user.password);
             if(validPassword){
-                user.status = true;
-                const data = JSON.parse(JSON.stringify(user));
-                delete data.password;
-                await user.update({status: true});
-                res.status(200).json(data)
+                const obj = JSON.parse(JSON.stringify(user));
+                delete obj.password;
+                const accessToken = jwt.sign(obj,process.env.ACCESS_TOKEN_SECRET,{expiresIn: '60s'});
+                const refreshToken = jwt.sign(obj,process.env.REFRESH_TOKEN_SECRET,{expiresIn: '1d'});
+                const data = await user.update({status: true, refresh_token: refreshToken});
+                res.cookie('jwt', refreshToken, {httpOnly: true, maxAge: 24 * 60 * 60 * 1000});
+                res.status(200).json(accessToken);
             }else{res.status(400).json("wrong password")}
         }else{
             res.status(401).json("There is no any Account for this Email.");
@@ -70,7 +75,6 @@ exports.loginUser = async (req, res) => {
 
 exports.updateUser = async (req, res) => {
         try {
-            await anyValidation(req.body);
             if(req.body.password){
                 const salt = await bcrypt.genSalt(10);
                 req.body.password = await bcrypt.hash(req.body.password, salt);
@@ -119,7 +123,7 @@ exports.getUser = async (req, res) => {
     try {
         const user = await User.findOne({
             attributes: {
-                exclude: ['password', 'email']
+                exclude: ['password', 'email', 'refresh_token']
             },
             where: { user_id: userId }
          });
@@ -136,7 +140,7 @@ exports.getFriends = async (req, res) => {
         const friends = await User.findAll({
             offset,
             attributes: {
-                exclude: ['password', 'email']
+                exclude: ['password', 'email', 'refresh_token']
             },
             where: {
                 [Op.not]: [{
@@ -158,7 +162,7 @@ exports.searhFriends = async (req, res) =>{
             offset,
             limit: 15,
             attributes: {
-                exclude: ['password', 'email']
+                exclude: ['password', 'email', 'refresh_token']
             },
             where: {
                 [Op.and]: [{
@@ -209,97 +213,5 @@ exports.deleteUser = async (req, res) => {
     }
 };
 
-exports.createMsg = async (req, res) => {
-    try {
-        const newMsg = await Message.create( {
-            sender_id : req.body.sender_id,
-            receiver_id : req.body.receiver_id,
-            message : req.body.message
-        });
-        !newMsg ? res.status(400).json('msg not store!') : res.status(200).json(newMsg);
-    } catch (error) {
-        let errors = [];
 
-        switch (error.name) {
-            case 'SequelizeValidationError':
-                errors = error.errors.map((e) => e.message);
-                return res.status(401).json({ error: errors });
-            case 'SequelizeUniqueConstraintError':
-                errors = ["Email Alredy Exist. Try Another One!"];
-                return res.status(402).json({ error: errors });
-        }
-
-        res.status(500).json({ error });
-    }
-}
-
-exports.deleteMsgs = async (req, res) => {
-        try {
-            const count = await Message.destroy({
-                where: {
-                    [Op.or]: [{
-                        [Op.and]: [{
-                            sender_id: req.params.id,
-                            receiver_id: req.query.friend_id
-                        }]},{
-                        [Op.and]: [{
-                            sender_id: req.query.friend_id,
-                            receiver_id: req.params.id
-                        }]
-                    }]
-                }
-            });
-            res.status(200).json(count);
-        } catch (error) {
-            res.status(500).json({ error });
-        }
-};
-
-exports.getMsgs = async (req, res) =>{
-    try {
-        const msgs = await Message.findAll({
-            where: {
-                [Op.or]: [{
-                    [Op.and]: [{
-                        sender_id: req.query.user_id,
-                        receiver_id: req.query.friend_id
-                    }]},{
-                    [Op.and]: [{
-                        sender_id: req.query.friend_id,
-                        receiver_id: req.query.user_id
-                    }]
-                }]
-            },
-            order: [['id', 'ASC']]
-        });
-        !msgs ? res.status(400).json('messages not available') : res.status(200).json(msgs);
-    } catch (error) {
-        res.status(500).json(error);
-    }
-}
-exports.getLastMsg = async (req, res) =>{
-    try {
-        const msgs = await Message.findOne({
-            where: {
-                [Op.or]: [{
-                    [Op.and]: [{
-                        sender_id: req.query.user_id,
-                        receiver_id: req.query.friend_id
-                    }]},{
-                    [Op.and]: [{
-                        sender_id: req.query.friend_id,
-                        receiver_id: req.query.user_id
-                    }]
-                }]
-            },
-            order: [['id', 'DESC']]
-        });
-        if(msgs && msgs.message.length > 30){
-            msgs.message = msgs.message.substring(0, 30).concat(" ....");
-        }
-        !msgs ? res.status(201).json({message: 'No any messages yet!'}) : res.status(200).json(msgs);
-    } catch (error) {
-        res.status(500).json(error);
-    }
-}
 

@@ -39,6 +39,9 @@ const User = db.define('user', {
     status: {
         type: DataTypes.BOOLEAN,
         defaultValue: false
+    },
+    refresh_token: {
+        type: DataTypes.TEXT
     }
 }, {
     timestamps: false,
@@ -87,7 +90,7 @@ Message.belongsTo(User,{
 });
 
 //keep sync with database table, if there not any table automatically creat
-db.sync().then(() => {
+db.sync({force: false}).then(() => {
     console.log("user table created");
 }).catch((err) => {
     console.log("Error syncing the Useer table" + err);
