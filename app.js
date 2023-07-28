@@ -17,7 +17,7 @@ const usersRout = require('./router/users');
 const messagesRout = require('./router/messages');
 const awsRout = require('./router/aws');
 const tokenRout = require('./router/token');
-const verifyJWT = require('./middleware/verifyJwT');
+// const verifyJWT = require('./middleware/verifyJwT');
 const app = express();
 
 // built-in middleware for json
@@ -31,7 +31,7 @@ app.use(cookieParser());
 app.use('/api/users', usersRout);
 app.use('/api/tokens', tokenRout);
 
-app.use(verifyJWT);
+// app.use(verifyJWT);
 app.use('/api/messages', messagesRout);
 app.use('/api/aws', awsRout);
 

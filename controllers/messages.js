@@ -14,8 +14,6 @@ exports.createMsg = async (req, res) => {
         });
         !newMsg ? res.status(400).json('msg not store!') : res.status(200).json(newMsg);
     } catch (error) {
-        let errors = [];
-
         switch (error.name) {
             case 'SequelizeValidationError':
                 return res.status(402).json("User id can't be string!");
@@ -45,7 +43,7 @@ exports.deleteMsgs = async (req, res) => {
             });
             res.status(200).json(count);
         } catch (error) {
-            res.status(500).json({ error });
+            res.status(500).json(error.message);
         }
 };
 
@@ -68,7 +66,7 @@ exports.getMsgs = async (req, res) =>{
         });
         !msgs ? res.status(400).json('messages not available') : res.status(200).json(msgs);
     } catch (error) {
-        res.status(500).json(error);
+        res.status(500).json(error.message);
     }
 }
 exports.getLastMsg = async (req, res) =>{
@@ -93,6 +91,6 @@ exports.getLastMsg = async (req, res) =>{
         }
         !msgs ? res.status(201).json({message: 'No any messages yet!'}) : res.status(200).json(msgs);
     } catch (error) {
-        res.status(500).json(error);
+        res.status(500).json(error.message);
     }
 }

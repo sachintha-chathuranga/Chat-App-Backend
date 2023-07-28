@@ -57,11 +57,12 @@ exports.loginUser = async (req, res) => {
             if(validPassword){
                 const obj = JSON.parse(JSON.stringify(user));
                 delete obj.password;
-                const accessToken = jwt.sign(obj,process.env.ACCESS_TOKEN_SECRET,{expiresIn: '60s'});
-                const refreshToken = jwt.sign(obj,process.env.REFRESH_TOKEN_SECRET,{expiresIn: '1d'});
-                const data = await user.update({status: true, refresh_token: refreshToken});
-                res.cookie('jwt', refreshToken, {httpOnly: true, maxAge: 24 * 60 * 60 * 1000});
-                res.status(200).json(accessToken);
+                // const accessToken = jwt.sign(obj,process.env.ACCESS_TOKEN_SECRET,{expiresIn: '60s'});
+                // const refreshToken = jwt.sign(obj,process.env.REFRESH_TOKEN_SECRET,{expiresIn: '1d'});
+                const data = await user.update({status: true/* , refresh_token: refreshToken */});
+                // res.cookie('jwt', refreshToken, {httpOnly: true, maxAge: 24 * 60 * 60 * 1000});
+                res.status(200).json(data);
+                // res.status(200).json(accessToken);
             }else{res.status(400).json("wrong password")}
         }else{
             res.status(401).json("There is no any Account for this Email.");
@@ -127,9 +128,9 @@ exports.getUser = async (req, res) => {
             },
             where: { user_id: userId }
          });
-        !user ? res.status(404).json({ error: 'User Not Found' }) : res.status(200).json(user);
+        !user ? res.status(404).json('User Not Found') : res.status(200).json(user);
     } catch (error) {
-        res.status(500).json(error);
+        res.status(500).json(error.message);
     }
 };
 
@@ -206,7 +207,7 @@ exports.deleteUser = async (req, res) => {
                 res.status(402).json("There is no any Account for this Email.");
             }
         } catch (error) {
-            res.status(500).json({ error });
+            res.status(500).json(errorr.message);
         }
     }else{
         return res.status(403).json("You can delete only your account ");
