@@ -1,4 +1,4 @@
-# Social Chating React App.
+# Social Chatting App.
 
 This project was create using Node.js.
 This is a backend code for chat app. which handle the request comming from frontend. if you want to run this app on your local envirement, follow the following instruction.
