@@ -9,10 +9,11 @@ exports.genarateURL = (req, res) =>{
     const s3 = new aws.S3();
     const fileName = req.query['file_name'];
     const fileType = req.query['file_type'];
+    const date = Date.now();
     const s3Params = {
         Bucket: S3_BUCKET,
-        Key: fileName,
-        //# of second of validation signurl time
+        Key: date+fileName,
+        //# of milisecond of validation signurl time
         Expires: 2000,
         ContentType: fileType,
         ACL: 'public-read'
