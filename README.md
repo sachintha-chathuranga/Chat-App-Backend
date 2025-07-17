@@ -74,9 +74,9 @@ you can get frontend code related to this app by [click here.](https://github.co
         ]
     }
     `
-4.Then go to Object Ownership section and Enable the ACls.
+5.Then go to Object Ownership section and Enable the ACls.
 
-5.After add CORS setting as follow.
+6.After add CORS setting as follow.
     `
         [
             {
