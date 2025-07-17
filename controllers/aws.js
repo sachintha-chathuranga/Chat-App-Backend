@@ -16,7 +16,7 @@ exports.genarateURL = (req, res) =>{
         //# of milisecond of validation signurl time
         Expires: 2000,
         ContentType: fileType,
-        ACL: 'public-read'
+        ACL: 'public-read' // need to give putObjectACl permission to I AM user 
     };
 
     s3.getSignedUrl('putObject', s3Params, (err, data) => {

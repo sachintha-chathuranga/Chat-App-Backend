@@ -32,5 +32,67 @@ you can get aws-access-key-id and aws-secret-access-key after creating aws accou
 you can get frontend code related to this app by [click here.](https://github.com/sachintha-chathuranga/Chat-App-Frontend)
 
 
+## Setup AWS S3 bucket permissions.
 
+1.Create S3 bucket in AWS.
 
+2.Go to permission tab and go to Block public access (bucket settings) section and give permission to public access.
+
+3.Then create new bucket policy as below.
+    `{
+        "Version": "2012-10-17",
+        "Statement": [
+            {
+                "Sid": "Statement1",
+                "Effect": "Allow",
+                "Principal": "*",
+                "Action": [
+                    "s3:GetObject"
+                ],
+                "Resource": "arn:aws:s3:::aws-chatapp-bucket/*"
+            }
+        ]
+    }`
+4.After that create new I AM role with following police.
+    `
+    {
+        "Version": "2012-10-17",
+        "Statement": [
+            {
+                "Sid": "Statement1",
+                "Effect": "Allow",
+                "Action": [
+                    "s3:PutObject",
+                    "s3:DeleteObject",
+                    "s3:GetObject",
+                    "s3:PutObjectAcl"
+                ],
+                "Resource": [
+                    "arn:aws:s3:::aws-chatapp-bucket/*"
+                ]
+            }
+        ]
+    }
+    `
+4.Then go to Object Ownership section and Enable the ACls.
+
+5.After add CORS setting as follow.
+    `
+        [
+            {
+                "AllowedHeaders": [
+                    "*"
+                ],
+                "AllowedMethods": [
+                    "PUT",
+                    "POST",
+                    "HEAD",
+                    "DELETE"
+                ],
+                "AllowedOrigins": [
+                    "*"
+                ],
+                "ExposeHeaders": []
+            }
+        ]
+    `
