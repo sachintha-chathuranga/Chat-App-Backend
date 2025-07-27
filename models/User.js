@@ -79,7 +79,7 @@ const Message = db.define('message', {
         defaultValue: false
     }
 }, {
-    timestamps: false,
+    timestamps: true,
 });
 
 
