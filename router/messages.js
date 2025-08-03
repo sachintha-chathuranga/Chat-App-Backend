@@ -1,6 +1,6 @@
 const express = require('express');
 
-const { createMsg, getMsgs, getLastMsg, deleteMsgs, updateMsg, getAllUnreadMsgs} = require('../controllers/messages');
+const {createMsg, getMsgs, getLastMsg, deleteMsgs, updateMsg, getAllUnreadMsgs} = require('../controllers/messages');
 
 const router = express.Router();
 

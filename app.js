@@ -1,16 +1,16 @@
 const dotenv = require('dotenv');
 const express = require('express');
-const { createServer } = require('http');
-const { Server } = require('socket.io');
+const {createServer} = require('http');
+const {Server} = require('socket.io');
 
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 // const path = require('path');
 
-const { connectDB } = require('./config/db');
+const {connectDB} = require('./config/db');
 
 // load envs
-dotenv.config({ path: './config/.env' });
+dotenv.config({path: './config/.env'});
 
 // connect to db
 connectDB();
@@ -20,24 +20,24 @@ const messagesRout = require('./router/messages');
 const awsRout = require('./router/aws');
 const tokenRout = require('./router/token');
 const verifyJWT = require('./middleware/verifyJwT');
+const {CloudWatchLogs} = require('aws-sdk');
 
 const app = express();
 
-
-const whitelist = ['https://mmsc-chatapp.netlify.app', 'http://localhost:3000']
+const whitelist = ['https://mmsc-chatapp.netlify.app', 'http://localhost:3000'];
 
 const corsOptions = {
-    origin: (origin, callback) =>{
-        if(whitelist.indexOf(origin) !== -1 || !origin){
-            callback(null, true)
-        }else{
-            callback(new Error('Not allowed by CORS'))
-        }
-    },
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    optionsSuccessStatus: 200,
-    credentials: true
-}
+	origin: (origin, callback) => {
+		if (whitelist.indexOf(origin) !== -1 || !origin) {
+			callback(null, true);
+		} else {
+			callback(new Error('Not allowed by CORS'));
+		}
+	},
+	methods: ['GET', 'POST', 'PUT', 'DELETE'],
+	optionsSuccessStatus: 200,
+	credentials: true,
+};
 // built-in middleware for json
 app.use(express.json());
 
@@ -53,38 +53,51 @@ app.use(verifyJWT);
 app.use('/api/messages', messagesRout);
 app.use('/api/aws', awsRout);
 
-
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
-    cors: {
-        origin: (origin, callback) =>{
-            if(whitelist.indexOf(origin) !== -1 || !origin){
-                callback(null, true)
-            }else{
-                callback(new Error('Not allowed by CORS'))
-            }
-        },
-        methods: ["GET", "POST"]
-    }
+	cors: {
+		origin: (origin, callback) => {
+			if (whitelist.indexOf(origin) !== -1 || !origin) {
+				callback(null, true);
+			} else {
+				callback(new Error('Not allowed by CORS'));
+			}
+		},
+		methods: ['GET', 'POST'],
+	},
 });
 
-io.on("connection", (socket) =>{
+io.on('connection', (socket) => {
+	console.log('User connected');
 
-    socket.on("joinRoom", (data) => {
-        socket.join(data);
-    });
+	socket.on('joinRoom', (data) => {
+		console.log('User join to room');
+		socket.join(data);
+	});
 
-    socket.on("sendMessage", ({sender_id, receiver_id, message}) => {
-        socket.to(sender_id+receiver_id).emit("getMessage", {
-            sender_id,
-            receiver_id,
-            message
-        });
-    });
+	socket.on('sendMessage', ({sender_id, receiver_id, message, createdAt}) => {
+		socket.to(receiver_id).emit('getMessage', {
+			sender_id,
+			receiver_id,
+			message,
+			createdAt,
+		});
+		// socket.broadcast.emit('triggerEvent', {sender_id, receiver_id});
+		// socket.to(receiver_id).emit('getNotification', {
+		// 	sender_id,
+		// 	receiver_id,
+		// 	message,
+		// });
+	});
 
-    socket.on("leaveRoom", (data) => {
-        socket.leave(data);
-    });
+	socket.on('disconnect', () => {
+		console.log('User disconnected');
+	});
+
+	socket.on('leaveRoom', (data) => {
+		console.log('User leave room');
+		socket.leave(data);
+	});
 });
 
 const PORT = process.env.PORT || 5001;

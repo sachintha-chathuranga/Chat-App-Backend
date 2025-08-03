@@ -1,5 +1,5 @@
 const express = require('express');
-const { updateAccessToken } = require('../controllers/refreshTokenController');
+const {updateAccessToken} = require('../controllers/refreshTokenController');
 
 const router = express.Router();
 

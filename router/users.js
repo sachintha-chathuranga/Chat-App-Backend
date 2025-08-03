@@ -1,7 +1,16 @@
 const express = require('express');
 
-const { createUser, loginUser, logoutUser, getUser, updateUser, deleteUser, getFriends, searhFriends } = require('../controllers/users');
-const { validation, updateValidation } = require('../middleware/validation');
+const {
+	createUser,
+	loginUser,
+	logoutUser,
+	getUser,
+	updateUser,
+	deleteUser,
+	getFriends,
+	searhFriends,
+} = require('../controllers/users');
+const {validation, updateValidation} = require('../middleware/validation');
 const verifyJWT = require('../middleware/verifyJwT');
 
 const router = express.Router();
