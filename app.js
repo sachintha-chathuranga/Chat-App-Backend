@@ -20,7 +20,6 @@ const messagesRout = require('./router/messages');
 const awsRout = require('./router/aws');
 const tokenRout = require('./router/token');
 const verifyJWT = require('./middleware/verifyJwT');
-const {CloudWatchLogs} = require('aws-sdk');
 
 const app = express();
 
@@ -74,7 +73,6 @@ io.on('connection', (socket) => {
 		console.log('User join to room');
 		socket.join(data);
 	});
-
 	socket.on('sendMessage', ({sender_id, receiver_id, message, createdAt}) => {
 		socket.to(receiver_id).emit('getMessage', {
 			sender_id,
@@ -82,12 +80,6 @@ io.on('connection', (socket) => {
 			message,
 			createdAt,
 		});
-		// socket.broadcast.emit('triggerEvent', {sender_id, receiver_id});
-		// socket.to(receiver_id).emit('getNotification', {
-		// 	sender_id,
-		// 	receiver_id,
-		// 	message,
-		// });
 	});
 
 	socket.on('disconnect', () => {
