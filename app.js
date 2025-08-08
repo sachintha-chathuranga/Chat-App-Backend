@@ -67,13 +67,30 @@ const io = new Server(httpServer, {
 });
 
 io.on('connection', (socket) => {
-	console.log('User connected');
+	console.log('User connected: ' + socket.id);
+	// socket.emit('me', socket.id);
+	socket.on('disconnect', () => {
+		// socket.broadcast.emit('callended');
+		console.log('Socket Disconnected');
+	});
+	socket.on('calluser', ({userToCall, signalData, from, name}) => {
+		console.log('send call request');
+		io.to(userToCall).emit('calluser', {signal: signalData, from, name});
+	});
+	socket.on('answercall', (data) => {
+		console.log('Answer Call');
+		io.to(data.to).emit('callaccepted', data.signal);
+	});
 
+	const totalConnections = io.engine.clientsCount;
+	console.log('Total connected clients:', totalConnections);
+	// For text messages
 	socket.on('joinRoom', (data) => {
-		console.log('User join to room');
+		console.log('User ' + data + ' join to room: ' + socket.id);
 		socket.join(data);
 	});
 	socket.on('sendMessage', ({sender_id, receiver_id, message, createdAt}) => {
+		console.log('Message Send to '+receiver_id);
 		socket.to(receiver_id).emit('getMessage', {
 			sender_id,
 			receiver_id,
@@ -81,17 +98,11 @@ io.on('connection', (socket) => {
 			createdAt,
 		});
 	});
-
-	socket.on('disconnect', () => {
-		console.log('User disconnected');
-	});
-
 	socket.on('leaveRoom', (data) => {
-		console.log('User leave room');
+		console.log('User ' + data + ' leave room');
 		socket.leave(data);
 	});
 });
-
 const PORT = process.env.PORT || 5001;
 
 httpServer.listen(PORT, console.log(`Server running on PORT: ${PORT}`));
