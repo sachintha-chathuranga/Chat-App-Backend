@@ -73,14 +73,20 @@ io.on('connection', (socket) => {
 		// socket.broadcast.emit('callended');
 		console.log('Socket Disconnected');
 	});
-	socket.on('calluser', ({userToCall, signalData, from, name}) => {
-		console.log('send call request');
-		io.to(userToCall).emit('calluser', {signal: signalData, from, name});
+
+	socket.on('calluser', ({userToCall, signalData, from}) => {
+		console.log(from.user_id + ' send call request to ' + userToCall);
+		socket.to(userToCall).emit('calluser', {signal: signalData, from});
 	});
 	socket.on('answercall', (data) => {
-		console.log('Answer Call');
-		io.to(data.to).emit('callaccepted', data.signal);
+		console.log(data.from+' Answer Call for '+data.to);
+		socket.to(data.to).emit('callaccepted', {signal:data.signal, from: data.from});
 	});
+	socket.on('hangup', ({to,from}) =>{
+		console.log('User '+from+ ' Hangup the call '+to)
+		socket.to(to).emit('hangup', {from});
+
+	})
 
 	const totalConnections = io.engine.clientsCount;
 	console.log('Total connected clients:', totalConnections);
