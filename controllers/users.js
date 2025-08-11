@@ -185,7 +185,7 @@ exports.getUser = async (req, res) => {
 exports.getFriends = async (req, res) => {
 	const limit = 15;
 	const offset = req.query.index ? limit * (parseInt(req.query.index) - 1) : 0;
-	console.log(req.query);
+
 	try {
 		const friends = await db.query(
 			`
