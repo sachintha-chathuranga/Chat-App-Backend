@@ -16,6 +16,7 @@ dotenv.config({path: './config/.env'});
 connectDB();
 
 const usersRout = require('./router/users');
+const authRout = require('./router/auth');
 const messagesRout = require('./router/messages');
 const awsRout = require('./router/aws');
 const tokenRout = require('./router/token');
@@ -23,7 +24,7 @@ const verifyJWT = require('./middleware/verifyJwT');
 
 const app = express();
 
-const whitelist = ['https://mmsc-chatapp.netlify.app', 'http://localhost:3000'];
+const whitelist = ['https://mmsc-chatapp.netlify.app', 'http://localhost:3000', 'http://localhost:8081'];
 
 const corsOptions = {
 	origin: (origin, callback) => {
@@ -47,6 +48,7 @@ app.use(cors(corsOptions));
 app.use(cookieParser());
 app.use('/api/tokens', tokenRout);
 app.use('/api/users', usersRout);
+app.use('/api/auth', authRout);
 
 app.use(verifyJWT);
 app.use('/api/messages', messagesRout);

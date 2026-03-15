@@ -30,6 +30,7 @@ exports.connectDB = async () => {
 	try {
 		await this.db.authenticate();
 		console.log(`MySql Connected: localhost`);
+		// await this.db.sync({force: true});
 	} catch (error) {
 		console.error('Unable to connect', error);
 	}

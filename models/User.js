@@ -11,29 +11,31 @@ const User = db.define(
 		},
 		fname: {
 			type: DataTypes.STRING,
-			allowNull: false,
+
 			validate: {
 				isAlpha: true,
 			},
 		},
 		lname: {
 			type: DataTypes.STRING,
-			allowNull: false,
+
 			validate: {
 				isAlpha: true,
 			},
 		},
 		email: {
 			type: DataTypes.STRING,
-			allowNull: false,
 			unique: true,
 			validate: {
 				isEmail: true,
 			},
 		},
+		phone: {
+			type: DataTypes.STRING,
+			unique: true,
+		},
 		password: {
 			type: DataTypes.STRING,
-			allowNull: false,
 		},
 		profil_pic: {
 			type: DataTypes.STRING,
@@ -82,7 +84,7 @@ const Message = db.define(
 		is_read: {
 			type: DataTypes.BOOLEAN,
 			defaultValue: false,
-		}
+		},
 	},
 	{
 		timestamps: true,
