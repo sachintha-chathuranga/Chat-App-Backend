@@ -1,5 +1,7 @@
 const express = require('express');
-const {signIn, sendOTP, verifyOTP, signUp} = require('../controllers/auth');
+const {signIn, sendOTP, verifyOTP, signUp, signOut} = require('../controllers/auth');
+const { updateMobileAccessToken } = require('../controllers/refreshTokenController');
+const verifyJWT = require('../middleware/verifyJwT');
 
 const router = express.Router();
 
@@ -7,5 +9,6 @@ const router = express.Router();
 router.route('/send-otp').post(sendOTP);
 router.route('/verify-otp').post(verifyOTP);
 router.route('/sign-up').post(signUp);
-
+router.route('/update-token').put(updateMobileAccessToken);
+router.route('/sign-out').put(verifyJWT,signOut);
 module.exports = router;
