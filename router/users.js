@@ -9,6 +9,7 @@ const {
 	deleteUser,
 	getFriends,
 	searhFriends,
+	getAll,
 } = require('../controllers/users');
 const {validation, updateValidation} = require('../middleware/validation');
 const verifyJWT = require('../middleware/verifyJwT');
@@ -20,6 +21,7 @@ router.route('/signUp').post(validation, createUser);
 router.route('/login').post(loginUser);
 router.route('/logout').post(logoutUser);
 router.route('/friends').get(verifyJWT, getFriends);
+router.route('/all').get(verifyJWT, getAll);
 router.route('/search').post(verifyJWT, searhFriends);
 router.route('/').put(verifyJWT, updateValidation, updateUser).delete(verifyJWT, deleteUser);
 router.route('/:id').get(verifyJWT, getUser);
