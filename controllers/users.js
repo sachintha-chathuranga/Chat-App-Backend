@@ -181,7 +181,40 @@ exports.getUser = async (req, res) => {
 	}
 };
 
-//  get all recent chating friends
+//  get all
+exports.getAll = async (req, res) => {
+	console.log("getAllUser call")
+	const limit = 15;
+	const offset = req.query.index ? limit * (parseInt(req.query.index) - 1) : 0;
+
+	try {
+		const friends = await db.query(
+			`
+			SELECT 
+				u.user_id,
+				u.fname,
+				u.lname,
+				u.phone,
+				u.profil_pic,
+				u.status
+			FROM users u
+			WHERE u.user_id != :userId LIMIT :limit OFFSET :offset;`,
+			{
+				replacements: {
+					userId: req.user.user_id,
+					limit,
+					offset,
+				},
+				type: db.QueryTypes.SELECT,
+			}
+		);
+
+		res.status(200).json(friends);
+	} catch (error) {
+		res.status(500).json(error);
+	}
+};
+// get all recent chating friends
 exports.getFriends = async (req, res) => {
 	const limit = 15;
 	const offset = req.query.index ? limit * (parseInt(req.query.index) - 1) : 0;
