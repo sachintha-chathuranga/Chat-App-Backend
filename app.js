@@ -100,9 +100,10 @@ io.on('connection', (socket) => {
 		console.log('User ' + data + ' join to room: ' + socket.id);
 		socket.join(data);
 	});
-	socket.on('sendMessage', ({sender_id, receiver_id, message, createdAt}) => {
+	socket.on('sendMessage', ({id, sender_id, receiver_id, message, createdAt}) => {
 		console.log('Message Send to '+receiver_id);
 		socket.to(receiver_id).emit('getMessage', {
+			id,
 			sender_id,
 			receiver_id,
 			message,
