@@ -27,3 +27,30 @@ exports.updateAccessToken = async (req, res) => {
 		res.status(402).json(error.message);
 	}
 };
+exports.updateMobileAccessToken = async (req, res) => {
+	console.log('update token call');
+	try {
+		const refreshToken = req.body.refreshToken;
+		const user = await User.findOne({
+			attributes: {
+				exclude: ['refresh_token', 'password'],
+			},
+			where: {refresh_token: refreshToken},
+		});
+		console.log("token: "+refreshToken)
+		if (!user) return res.status(402).json({message: 'Unautherize'});
+		console.log("user find for this token")
+		jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, decoded) => {
+			if (err || user.dataValues.user_id !== decoded.user_id) {
+				console.log("token verification failed!")
+				user.update({status: false, refresh_token: null});
+				return res.status(402).json({message: 'Unautherize'});
+			}
+			const accessToken = jwt.sign(user.dataValues, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '1min'});
+			res.status(200).json({...user.dataValues, access_token: accessToken});
+		});
+	} catch (error) {
+		console.log(error);
+		res.status(402).json(error.message);
+	}
+};		
