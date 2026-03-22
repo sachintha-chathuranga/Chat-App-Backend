@@ -1,8 +1,9 @@
 const {User} = require('../models/User');
+const jwt = require('jsonwebtoken');
 
 exports.sendOTP = async (req, res) => {
 	try {
-		res.status(200).json({message: `OTP send to ${req.body.phone}`});
+		res.status(200).json(`OTP send to ${req.body.phone}`);
 	} catch (error) {
 		console.log(error);
 		res.status(403).json(error.message);
@@ -22,12 +23,20 @@ exports.verifyOTP = async (req, res) => {
 				const newUser = await User.create({
 					phone: req.body.phone,
 				});
-				user = newUser;
-				console.log("new user created")
+				return res.status(200).json({user:newUser});
 			}
-			res.status(200).json({user});
+			const obj = JSON.parse(JSON.stringify(user));
+			const accessToken = jwt.sign(obj, process.env.ACCESS_TOKEN_SECRET, {
+				expiresIn: '1min',
+			});
+			const refreshToken = jwt.sign(obj, process.env.REFRESH_TOKEN_SECRET, {expiresIn: '1d'});
+			await user.update({
+				status: true,
+				refresh_token: refreshToken,
+			});
+			res.status(200).json({user, accessToken, refreshToken});
 		} else {
-			res.status(402).json({message: 'Invalide OTP'});
+			res.status(402).json('Invalide OTP');
 		}
 	} catch (error) {
 		console.log(error);
@@ -38,9 +47,6 @@ exports.verifyOTP = async (req, res) => {
 exports.signUp = async (req, res) => {
 	try {
 		const [fname, lname] = req.body.userName.split(' ');
-		console.log(req.body.userName)
-		console.log("first : "+fname)
-		console.log("last : "+lname)
 		const user = await User.findOne({
 			attributes: {
 				exclude: ['refresh_token', 'password'],
@@ -49,12 +55,42 @@ exports.signUp = async (req, res) => {
 		});
 		if (user) {
 			await user.update({fname, lname});
-			console.log("user update success")
+			const obj = JSON.parse(JSON.stringify(user));
+			const accessToken = jwt.sign(obj, process.env.ACCESS_TOKEN_SECRET, {
+				expiresIn: '1min',
+			});
+			const refreshToken = jwt.sign(obj, process.env.REFRESH_TOKEN_SECRET, {expiresIn: '1d'});
+			await user.update({
+				status: true,
+				refresh_token: refreshToken,
+			});
+			return res.status(200).json({user, accessToken, refreshToken});
 		}
-		
-		res.status(200).json({user});
+		res.status(400).json("User not found");
 	} catch (error) {
 		console.log(error);
 		res.status(403).json(error.message);
+	}
+};
+
+exports.signOut = async (req, res) => {
+	console.log("sign out call")
+	try {
+		const user = await User.findOne({
+			attributes: {
+				exclude: ['refresh_token', 'password'],
+			},
+			where: {user_id: req.user.user_id},
+		});
+		if (user) {
+			console.log("user found")
+			await user.update({status: false, refresh_token: null});
+			return res.status(200).json('logout success!');
+		}
+		console.log("user not found")
+		res.status(404).json('user not found');
+	} catch (error) {
+		console.log("error while signou")
+		res.status(402).json(error.message);
 	}
 };
