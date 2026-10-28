@@ -1,7 +1,9 @@
 const snakeKeys = require('snakecase-keys');
 const {User, Message} = require('../models/User');
 const {Op} = require('sequelize');
+const {db} = require('../config/db');
 require('dotenv').config();
+
 
 exports.createMsg = async (req, res) => {
 	try {
@@ -69,30 +71,25 @@ exports.deleteMsgs = async (req, res) => {
 	}
 };
 exports.getMsgs = async (req, res) => {
+	const limit = 30;
+	const offset = req.query.index ? limit * (parseInt(req.query.index) - 1) : 0;
+	const order = req.query.order_by ? req.query.order_by : 'ASC';
 	try {
-		const msgs = await Message.findAll({
-			where: {
-				[Op.or]: [
-					{
-						[Op.and]: [
-							{
-								sender_id: req.user.user_id,
-								receiver_id: req.query.friend_id,
-							},
-						],
-					},
-					{
-						[Op.and]: [
-							{
-								sender_id: req.query.friend_id,
-								receiver_id: req.user.user_id,
-							},
-						],
-					},
-				],
-			},
-			order: [['id', 'ASC']],
-		});
+		const msgs = await db.query(
+			`
+			SELECT m.*
+			FROM messages m
+			WHERE (m.sender_id = :userId AND m.receiver_id = :friendId) OR (m.sender_id = :friendId AND m.receiver_id = :userId) ORDER BY m.createdAt ${order} LIMIT :limit OFFSET :offset;`,
+			{
+				replacements: {
+					userId: req.user.user_id,
+					friendId: req.query.friend_id,
+					limit,
+					offset,
+				},
+				type: db.QueryTypes.SELECT,
+			}
+		);
 		!msgs ? res.status(400).json('messages not available') : res.status(200).json(msgs);
 	} catch (error) {
 		res.status(500).json(error.message);

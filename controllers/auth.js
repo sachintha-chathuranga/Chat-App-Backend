@@ -5,7 +5,6 @@ exports.sendOTP = async (req, res) => {
 	try {
 		res.status(200).json(`OTP send to ${req.body.phone}`);
 	} catch (error) {
-		console.log(error);
 		res.status(403).json(error.message);
 	}
 };

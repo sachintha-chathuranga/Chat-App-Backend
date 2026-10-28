@@ -37,14 +37,14 @@ exports.updateMobileAccessToken = async (req, res) => {
 			},
 			where: {refresh_token: refreshToken},
 		});
-		console.log("token: "+refreshToken)
-		if (!user) return res.status(402).json({message: 'Unautherize'});
-		console.log("user find for this token")
+		console.log('token: ' + refreshToken);
+		if (!user) return res.status(402).json('Unautherize(refresh token not in DB)');
+		console.log('user find for this token');
 		jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, decoded) => {
 			if (err || user.dataValues.user_id !== decoded.user_id) {
-				console.log("token verification failed!")
+				console.log('token verification failed!');
 				user.update({status: false, refresh_token: null});
-				return res.status(402).json({message: 'Unautherize'});
+				return res.status(402).json('Unautherize(refresh token is expire)');
 			}
 			const accessToken = jwt.sign(user.dataValues, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '1min'});
 			res.status(200).json({...user.dataValues, access_token: accessToken});
@@ -53,4 +53,4 @@ exports.updateMobileAccessToken = async (req, res) => {
 		console.log(error);
 		res.status(402).json(error.message);
 	}
-};		
+};
