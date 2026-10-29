@@ -1,4 +1,4 @@
-const {User} = require('../models/User');
+const {User} = require('../models');
 const jwt = require('jsonwebtoken');
 
 exports.sendOTP = async (req, res) => {
@@ -22,7 +22,7 @@ exports.verifyOTP = async (req, res) => {
 				const newUser = await User.create({
 					phone: req.body.phone,
 				});
-				return res.status(200).json({user:newUser});
+				return res.status(200).json({user: newUser});
 			}
 			const obj = JSON.parse(JSON.stringify(user));
 			const accessToken = jwt.sign(obj, process.env.ACCESS_TOKEN_SECRET, {
@@ -65,7 +65,7 @@ exports.signUp = async (req, res) => {
 			});
 			return res.status(200).json({user, accessToken, refreshToken});
 		}
-		res.status(400).json("User not found");
+		res.status(400).json('User not found');
 	} catch (error) {
 		console.log(error);
 		res.status(403).json(error.message);
@@ -73,7 +73,7 @@ exports.signUp = async (req, res) => {
 };
 
 exports.signOut = async (req, res) => {
-	console.log("sign out call")
+	console.log('sign out call');
 	try {
 		const user = await User.findOne({
 			attributes: {
@@ -82,14 +82,14 @@ exports.signOut = async (req, res) => {
 			where: {user_id: req.user.user_id},
 		});
 		if (user) {
-			console.log("user found")
+			console.log('user found');
 			await user.update({status: false, refresh_token: null});
 			return res.status(200).json('logout success!');
 		}
-		console.log("user not found")
+		console.log('user not found');
 		res.status(404).json('user not found');
 	} catch (error) {
-		console.log("error while signou")
+		console.log('error while signou');
 		res.status(402).json(error.message);
 	}
 };

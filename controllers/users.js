@@ -1,5 +1,5 @@
 const snakeKeys = require('snakecase-keys');
-const {User, Message} = require('../models/User');
+const {User, Message} = require('../models');
 const bcrypt = require('bcrypt');
 const {Op, sequelize} = require('sequelize');
 const jwt = require('jsonwebtoken');

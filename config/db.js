@@ -29,9 +29,12 @@ exports.db = new Sequelize(DB_NAME, DB_USER, DB_PASS, {
 exports.connectDB = async () => {
 	try {
 		await this.db.authenticate();
-		console.log(`MySql Connected: localhost`);
-		// await this.db.sync({force: true});
+		console.log('Database connected');
+
+		await this.db.sync({alter: false});
+		console.log('Database synchronized');
+
 	} catch (error) {
-		console.error('Unable to connect', error);
+		console.error('Unable to connect Database!', error);
 	}
 };

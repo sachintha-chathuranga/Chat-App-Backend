@@ -96,3 +96,5 @@ you can get frontend code related to this app by [click here.](https://github.co
             }
         ]
     `
+## Important
+1.Make sure your MySQL database, table, and column use utf8mb4 encoding to support emojis correctly.
