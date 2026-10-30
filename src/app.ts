@@ -6,19 +6,18 @@ import type {CorsOptions} from 'cors';
 
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
-const dotenv = require('dotenv');
-dotenv.config({path: './src/config/.env'});
+import './config/env';
 
 const verifyJWT = require('./middleware/verifyJwT');
-const {connectDB} = require('./config/db');
+import {connectDB} from './config/db';
 
 // connect to db
 connectDB();
 
-const usersRout = require('./router/users');
-const authRout = require('./router/auth');
-const messagesRout = require('./router/messages');
-const awsRout = require('./router/aws');
+import usersRout from './router/users';
+import authRout from'./router/auth';
+import messagesRout from'./router/messages';
+import awsRout from'./router/aws';
 
 const restApp = express();
 

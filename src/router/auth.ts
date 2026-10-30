@@ -20,4 +20,5 @@ router.route('/verify-otp').post(verifyOTP);
 router.route('/update-mobile-token').put(updateMobileAccessToken);
 router.route('/mobile-sign-up').post(mobileNameValidation, mobileSignUp);
 router.route('/mobile-sign-out').put(verifyJWT, signOut);
-module.exports = router;
+
+export default router;

@@ -11,4 +11,4 @@ router.route('/search').post(searhFriends);
 router.route('/').put(updateValidation, updateUser).delete(deleteUser);
 router.route('/:id').get(getUser);
 
-module.exports = router;
+export default router;

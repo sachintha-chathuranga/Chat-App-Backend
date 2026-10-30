@@ -1,5 +1,5 @@
-const {DataTypes} = require('sequelize');
-const {db} = require('../config/db');
+import {DataTypes} from 'sequelize';
+import db from '../config/db';
 
 const Message = db.define(
 	'message',
@@ -25,8 +25,6 @@ const Message = db.define(
 		},
 		message: {
 			type: DataTypes.STRING(255),
-			charset: 'utf8mb4',
-			collate: 'utf8mb4_unicode_ci',
 			allowNull: false,
 		},
 		is_read: {
@@ -35,6 +33,8 @@ const Message = db.define(
 		},
 	},
 	{
+		charset: 'utf8mb4',
+		collate: 'utf8mb4_unicode_ci',
 		timestamps: true,
 	}
 );

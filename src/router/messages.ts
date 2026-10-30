@@ -11,4 +11,4 @@ router.route('/messages/notifications').get(getAllUnreadMsgs);
 router.route('/messages/update').put(updateMsg);
 router.route('/msg').get(getLastMsg);
 
-module.exports = router;
+export default router;

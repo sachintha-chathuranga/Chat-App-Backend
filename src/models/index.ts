@@ -29,4 +29,4 @@ Message.belongsTo(User, {
 	as: 'receiver',
 });
 
-module.exports = {User, Message};
+export default {User, Message};

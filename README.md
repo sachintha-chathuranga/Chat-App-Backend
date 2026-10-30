@@ -7,7 +7,7 @@ This is a backend code for chat app. which handle the request comming from front
 
 1.clone the repository into your local computer.
 
-2.create .env file inside config directory and add the following variable in to it. 
+2.create .env file in root directory and add the following variable in to it. 
 
     PORT=5000  
     DB_NAME="Replace this with your mysql Database name"

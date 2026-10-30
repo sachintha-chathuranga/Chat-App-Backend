@@ -6,4 +6,4 @@ const router = express.Router();
 router.route('/sign-s3').get(genarateURL);
 router.route('/sign-s3/delete').delete(deletObj);
 
-module.exports = router;
+export default router;
