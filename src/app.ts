@@ -26,7 +26,7 @@ const whitelist: string[] = ['https://mmsc-chatapp.netlify.app', 'http://localho
 
 const httpCorsOptions: CorsOptions = {
 	origin: (origin, callback) => {
-		if (whitelist.includes(origin || '') || !origin) {
+		if (whitelist.includes(origin || '')|| !origin) {
 			callback(null, true);
 		} else {
 			callback(new Error('Not allowed by CORS'));

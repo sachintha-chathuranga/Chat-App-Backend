@@ -1,6 +1,6 @@
-const express = require('express');
+import express from 'express';
 
-const {createMsg, getMsgs, getLastMsg, deleteMsgs, updateMsg, getAllUnreadMsgs} = require('../controllers/messages');
+import {createMsg, deleteMsgs, getAllUnreadMsgs, getLastMsg, getMsgs, updateMsg} from '../controllers/messages';
 
 const router = express.Router();
 

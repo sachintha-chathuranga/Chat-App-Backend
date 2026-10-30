@@ -1,6 +1,7 @@
-const express = require('express');
-const {getUser, updateUser, deleteUser, searhFriends, getRecentFriends, getFriends} = require('../controllers/users');
-const {updateValidation} = require('../middleware/validation');
+import express from "express";
+import { updateValidation } from "../middleware/validation";
+import { deleteUser, getFriends, getRecentFriends, getUser, searhFriends, updateUser } from "../controllers/users";
+
 const router = express.Router();
 
 //if request comming to this end point these function will execute

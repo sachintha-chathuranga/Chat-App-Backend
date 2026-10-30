@@ -1,5 +1,5 @@
-const express = require('express');
-const {genarateURL, deletObj} = require('../controllers/aws');
+import express from "express";
+import {deletObj, genarateURL} from '../controllers/aws';
 
 const router = express.Router();
 
