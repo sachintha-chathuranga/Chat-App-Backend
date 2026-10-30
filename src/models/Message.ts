@@ -38,4 +38,4 @@ const Message = db.define(
 		timestamps: true,
 	}
 );
-module.exports = Message;
+export default Message;

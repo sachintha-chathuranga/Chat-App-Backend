@@ -1,5 +1,5 @@
-const User = require('./User');
-const Message = require('./Message');
+import Message from './Message';
+import User from './User';
 
 // A user can send many messages
 User.hasMany(Message, {
