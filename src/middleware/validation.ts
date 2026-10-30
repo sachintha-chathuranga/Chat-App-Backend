@@ -1,4 +1,6 @@
-exports.validation = (req, res, next) => {
+import type {NextFunction, Request, Response} from 'express';
+
+export const validation = (req: Request, res: Response, next: NextFunction) => {
 	let errors;
 	if (req.body.fname === '' || req.body.lname === '' || req.body.email === '' || req.body.password === '') {
 		errors = 'All input feild are required!';
@@ -15,7 +17,7 @@ exports.validation = (req, res, next) => {
 	errors ? res.status(402).json(errors) : next();
 };
 
-exports.updateValidation = (req, res, next) => {
+export const updateValidation = (req: Request, res: Response, next: NextFunction) => {
 	let errors;
 	if (req.body.password && !/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/.test(req.body.password)) {
 		errors =
@@ -30,7 +32,7 @@ exports.updateValidation = (req, res, next) => {
 	errors ? res.status(402).json(errors) : next();
 };
 
-exports.mobileUpdateValidation = (req, res, next) => {
+export const mobileUpdateValidation = (req: Request, res: Response, next: NextFunction) => {
 	let errors;
 
 	if (req.body.fname && (req.body.fname.length < 3 || req.body.fname.length > 15)) {
@@ -41,7 +43,7 @@ exports.mobileUpdateValidation = (req, res, next) => {
 	errors ? res.status(402).json(errors) : next();
 };
 
-exports.mobileNameValidation = (req, res, next) => {
+export const mobileNameValidation = (req: Request, res: Response, next: NextFunction) => {
 	const [fname, lname] = req.body.userName.split(' ');
 	let errors;
 	if (req.body.userName < 4 || req.body.userName > 30) {

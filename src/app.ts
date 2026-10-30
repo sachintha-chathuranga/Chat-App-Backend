@@ -1,23 +1,23 @@
+import type {CorsOptions} from 'cors';
 import express from 'express';
 import {createServer} from 'http';
-import {Server} from 'socket.io';
 import type {ServerOptions} from 'socket.io';
-import type {CorsOptions} from 'cors';
+import {Server} from 'socket.io';
+import {connectDB} from './config/db';
 
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
-import './config/env';
 
-const verifyJWT = require('./middleware/verifyJwT');
-import {connectDB} from './config/db';
+import verifyJWT from './middleware/verifyJwT';
 
 // connect to db
 connectDB();
 
+import env from './config/env';
+import authRout from './router/auth';
+import awsRout from './router/aws';
+import messagesRout from './router/messages';
 import usersRout from './router/users';
-import authRout from'./router/auth';
-import messagesRout from'./router/messages';
-import awsRout from'./router/aws';
 
 const restApp = express();
 
@@ -25,7 +25,7 @@ const whitelist: string[] = ['https://mmsc-chatapp.netlify.app', 'http://localho
 
 const httpCorsOptions: CorsOptions = {
 	origin: (origin, callback) => {
-		if (whitelist.includes(origin || '')|| !origin) {
+		if (whitelist.includes(origin || '') || !origin) {
 			callback(null, true);
 		} else {
 			callback(new Error('Not allowed by CORS'));
@@ -35,7 +35,7 @@ const httpCorsOptions: CorsOptions = {
 	optionsSuccessStatus: 200,
 	credentials: true,
 };
-const socketCorsOptions:Partial<ServerOptions> = {
+const socketCorsOptions: Partial<ServerOptions> = {
 	cors: {
 		origin: (origin, callback) => {
 			if (whitelist.includes(origin || '') || !origin) {
@@ -112,6 +112,7 @@ io.on('connection', (socket) => {
 		socket.leave(data);
 	});
 });
-const PORT = process.env.PORT || 5001;
+
+const PORT = env.PORT;
 
 httpServer.listen(PORT, () => console.log(`Server running on PORT: ${PORT}`));
