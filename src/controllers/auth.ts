@@ -1,9 +1,12 @@
+import { Request, Response } from "express";
+import handleError from "../utils/errorHandler";
+
 const {User} = require('../models');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 
 // Only for web
-exports.signIN = async (req, res) => {
+exports.signIN = async (req:Request, res:Response) => {
 	try {
 		const user = await User.findOne({
 			attributes: {
@@ -36,26 +39,26 @@ exports.signIN = async (req, res) => {
 					access_token: accessToken,
 				});
 			} else {
-				res.status(400).json('wrong password');
+				res.status(400).json('Invalid Password or Email');
 			}
 		} else {
-			res.status(402).json('There is no any Account for this Email.');
+			res.status(402).json('Invalid Password or Email');
 		}
 	} catch (error) {
-		res.status(403).json(error.message);
+		res.status(500).json(handleError(error));
 	}
 };
 
 // Only for mobile app
-exports.sendOTP = async (req, res) => {
+exports.sendOTP = async (req:Request, res:Response) => {
 	try {
 		res.status(200).json(`OTP send to ${req.body.phone}`);
 	} catch (error) {
-		res.status(403).json(error.message);
+		res.status(500).json(handleError(error));
 	}
 };
 // Only for mobile app
-exports.verifyOTP = async (req, res) => {
+exports.verifyOTP = async (req:Request, res:Response) => {
 	try {
 		const userOTP = req.body.otp;
 		if (userOTP === '125456') {
@@ -85,12 +88,11 @@ exports.verifyOTP = async (req, res) => {
 			res.status(402).json('Invalide OTP');
 		}
 	} catch (error) {
-		console.log(error);
-		res.status(403).json(error.message);
+		res.status(500).json(handleError(error));
 	}
 };
 // Only for Mobile app
-exports.mobileSignUp = async (req, res) => {
+exports.mobileSignUp = async (req:Request, res:Response) => {
 	try {
 		const [fname, lname] = req.body.userName.split(' ');
 		const user = await User.findOne({
@@ -114,18 +116,17 @@ exports.mobileSignUp = async (req, res) => {
 		}
 		res.status(400).json('User not found');
 	} catch (error) {
-		console.log(error);
-		res.status(403).json(error.message);
+		res.status(500).json(handleError(error));
 	}
 };
 
-exports.signOut = async (req, res) => {
+exports.signOut = async (req:Request, res:Response) => {
 	try {
 		const user = await User.findOne({
 			attributes: {
 				exclude: ['refresh_token', 'password'],
 			},
-			where: {user_id: req.user.user_id},
+			where: {user_id: req.user?.user_id},
 		});
 		if (user) {
 			await user.update({status: false, refresh_token: null});
@@ -133,7 +134,6 @@ exports.signOut = async (req, res) => {
 		}
 		res.status(404).json('user not found');
 	} catch (error) {
-		console.log('error while signout');
-		res.status(402).json(error.message);
+		res.status(500).json(handleError(error));
 	}
 };

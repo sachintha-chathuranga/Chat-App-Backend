@@ -1,5 +1,5 @@
 import {NextFunction, Request, Response} from 'express';
-import jwt from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 import env from '../config/env';
 
 const verifyJWT = (req: Request, res: Response, next: NextFunction) => {
@@ -13,7 +13,7 @@ const verifyJWT = (req: Request, res: Response, next: NextFunction) => {
 	}
 	jwt.verify(token, env.ACCESS_TOKEN_SECRET, (err, decoded) => {
 		if (err) return res.status(403).json('Invalid Token');
-		req.user = decoded;
+		req.user = decoded as JwtPayload;
 		next();
 	});
 };

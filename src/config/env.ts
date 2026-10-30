@@ -27,6 +27,7 @@ const env = {
 	S3_BUCKET: requiredEnv('S3_BUCKET'),
 	ACCESS_TOKEN_SECRET: requiredEnv('ACCESS_TOKEN_SECRET'),
 	REFRESH_TOKEN_SECRET: requiredEnv('REFRESH_TOKEN_SECRET'),
+	NODE_ENV: requiredEnv('NODE_ENV'),
 };
 
 export default env;
