@@ -1,17 +1,15 @@
 {
 	"compilerOptions": {
-		"target": "ES2020",
-		"module": "NodeNext",
-		"moduleResolution": "NodeNext",
-		"outDir": "./dist",
 		"rootDir": "./src",
+		"outDir": "./dist",
+		"target": "es2020",
+		"module": "CommonJS",
+		"allowJs": true,
+		"checkJs": false,
 		"strict": true,
 		"esModuleInterop": true,
-		"skipLibCheck": true,
-		"forceConsistentCasingInFileNames": true,
-		"resolveJsonModule": true,
-		"sourceMap": true
+		"skipLibCheck": true
 	},
-	"include": ["src/**/*.ts", "src/config/db.js"],
+	"include": ["src/**/*.ts"],
 	"exclude": ["node_modules", "dist"]
 }

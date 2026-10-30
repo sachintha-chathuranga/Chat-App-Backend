@@ -8,10 +8,11 @@
 		"url": "https://github.com/sachintha-chathuranga/Chat-App-Backend.git"
 	},
 	"scripts": {
-		"dev": "nodemon src/app.js",
+		"dev": "tsx watch src/app.ts",
+		"watch": "tsc --watch",
 		"build": "tsc",
-		"start": "node src/app.js",
-		"typecheck": "tsc --noEmit"
+		"start": "node dist/app.js",
+		"typecheck": "npx tsc --noEmit"
 	},
 	"keywords": [],
 	"author": "Sachintha",
@@ -36,10 +37,10 @@
 		"socket.io": "^4.7.5"
 	},
 	"devDependencies": {
+		"@types/cors": "^2.8.19",
 		"@types/express": "^5.0.6",
+		"@types/jsonwebtoken": "^9.0.10",
 		"@types/node": "^26.6.6",
-		"nodemon": "^3.1.4",
-		"ts-node": "^10.9.2",
 		"tsx": "^4.23.15",
 		"typescript": "^7.0.2"
 	},

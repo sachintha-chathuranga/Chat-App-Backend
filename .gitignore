@@ -1,7 +1,3 @@
 /node_modules
-
-/src/config/.env
-
-
-
-
+.env
+/dist

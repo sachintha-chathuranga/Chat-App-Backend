@@ -12,7 +12,6 @@ const router = express.Router();
 router.route('/sign-up').post(validation, createUser);
 router.route('/sign-in').post(signIN);
 router.route('/update-token').put(updateAccessToken);
-// Every JWT verification middleware must bottom of any other route
 router.route('/sign-out').post(verifyJWT,clearCookie, signOut);
 
 // Mobile routes
