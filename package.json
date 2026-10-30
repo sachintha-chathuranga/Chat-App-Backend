@@ -2,14 +2,16 @@
 	"name": "chat-app",
 	"version": "1.0.0",
 	"main": "app.js",
-	"type": "es6",
+	"type": "commonjs",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/sachintha-chathuranga/Chat-App-Backend.git"
 	},
 	"scripts": {
-		"start": "node app.js",
-		"dev": "nodemon app.js"
+		"dev": "nodemon src/app.js",
+		"build": "tsc",
+		"start": "node src/app.js",
+		"typecheck": "tsc --noEmit"
 	},
 	"keywords": [],
 	"author": "Sachintha",
@@ -34,7 +36,12 @@
 		"socket.io": "^4.7.5"
 	},
 	"devDependencies": {
-		"nodemon": "^3.1.4"
+		"@types/express": "^5.0.6",
+		"@types/node": "^26.6.6",
+		"nodemon": "^3.1.4",
+		"ts-node": "^10.9.2",
+		"tsx": "^4.23.15",
+		"typescript": "^7.0.2"
 	},
 	"description": "open source web chat app for users"
 }

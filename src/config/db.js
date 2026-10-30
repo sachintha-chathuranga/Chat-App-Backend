@@ -1,8 +1,5 @@
 const {Sequelize} = require('sequelize');
 
-const dotenv = require('dotenv');
-
-dotenv.config({path: './config/.env'});
 const DB_NAME = process.env.DB_NAME;
 const DB_USER = process.env.DB_USER;
 const DB_PASS = process.env.DB_PASS;
@@ -33,8 +30,8 @@ exports.connectDB = async () => {
 
 		await this.db.sync({alter: false});
 		console.log('Database synchronized');
-
 	} catch (error) {
 		console.error('Unable to connect Database!', error);
+		throw error;
 	}
 };

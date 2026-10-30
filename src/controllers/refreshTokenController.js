@@ -1,8 +1,10 @@
 const {User} = require('../models');
 const jwt = require('jsonwebtoken');
-require('dotenv').config();
 
+// Only for web app
 exports.updateAccessToken = async (req, res) => {
+	console.log("Update AccessToken")
+	console.log(process.env.REFRESH_TOKEN_SECRET);
 	const cookies = req.cookies;
 	try {
 		if (!cookies.jwt) return res.status(401).json('JWT not in cookies');
@@ -27,8 +29,8 @@ exports.updateAccessToken = async (req, res) => {
 		res.status(402).json(error.message);
 	}
 };
+// Only for Mobile app
 exports.updateMobileAccessToken = async (req, res) => {
-	console.log('update token call');
 	try {
 		const refreshToken = req.body.refreshToken;
 		const user = await User.findOne({
@@ -37,9 +39,7 @@ exports.updateMobileAccessToken = async (req, res) => {
 			},
 			where: {refresh_token: refreshToken},
 		});
-		console.log('token: ' + refreshToken);
 		if (!user) return res.status(402).json('Unautherize(refresh token not in DB)');
-		console.log('user find for this token');
 		jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, decoded) => {
 			if (err || user.dataValues.user_id !== decoded.user_id) {
 				console.log('token verification failed!');

@@ -2,8 +2,6 @@ const snakeKeys = require('snakecase-keys');
 const {User, Message} = require('../models');
 const {Op} = require('sequelize');
 const {db} = require('../config/db');
-require('dotenv').config();
-
 
 exports.createMsg = async (req, res) => {
 	try {
