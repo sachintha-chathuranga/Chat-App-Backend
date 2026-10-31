@@ -1,7 +1,5 @@
-const dotenv = require('dotenv');
 const aws = require('aws-sdk');
 
-dotenv.config({path: './config/.env'});
 aws.config.region = 'ap-south-1';
 const S3_BUCKET = process.env.S3_BUCKET;
 

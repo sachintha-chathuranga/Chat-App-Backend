@@ -7,7 +7,7 @@ This is a backend code for chat app. which handle the request comming from front
 
 1.clone the repository into your local computer.
 
-2.create .env file inside config directory and add the following variable in to it. 
+2.create .env.development file in root directory and add the following variable in to it. 
 
     PORT=5000  
     DB_NAME="Replace this with your mysql Database name"
@@ -96,3 +96,5 @@ you can get frontend code related to this app by [click here.](https://github.co
             }
         ]
     `
+## Important
+1.Make sure your MySQL database, table, and column use utf8mb4 encoding to support emojis correctly.
